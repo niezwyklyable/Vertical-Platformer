@@ -1,5 +1,6 @@
 from pygame.image import load
 #from pygame.transform import scale
+from pygame.transform import flip
 
 # screen refreshing frequency
 FPS = 60
@@ -19,7 +20,13 @@ TERRAIN = load('assets/misc/Terrain/Terrain.png')
 FLOOR = TERRAIN.subsurface(7*16, 0, 16, 32)
 
 # player
-PLAYER_IDLE = load('assets/player/Idle (32x32).png')
-PLAYER_IDLE_LIST = []
+PLAYER_IDLE_RIGHT = load('assets/player/Idle (32x32).png')
+PLAYER_IDLE_LEFT = flip(PLAYER_IDLE_RIGHT, True, False) # mirroring player assets but changing their order
+PLAYER_IDLE_RIGHT_LIST = []
 for i in range(11):
-    PLAYER_IDLE_LIST.append(PLAYER_IDLE.subsurface(i*32, 0, 32, 32))
+    PLAYER_IDLE_RIGHT_LIST.append(PLAYER_IDLE_RIGHT.subsurface(i*32, 0, 32, 32))
+
+PLAYER_IDLE_LEFT_LIST = []
+for i in range(11):
+    PLAYER_IDLE_LEFT_LIST.append(PLAYER_IDLE_LEFT.subsurface(i*32, 0, 32, 32))
+PLAYER_IDLE_LEFT_LIST.reverse() # reorder assets to original order

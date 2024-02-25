@@ -23,6 +23,14 @@ def main():
                 pos = pygame.mouse.get_pos()
                 print(pos)
 
+        # player steering trigger
+        if not game.gameover:
+            keys = pygame.key.get_pressed() # zwraca slownik z wartosciami typu bool
+            if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                game.player.move('left')
+            elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+                game.player.move('right')
+
         game.update()
         game.render()
 

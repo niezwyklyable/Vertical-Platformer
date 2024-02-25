@@ -8,6 +8,7 @@ class Game():
         self.win = win
         self.player = None
         self.create_player()
+        self.gameover = False
 
     def update(self):
         # player
