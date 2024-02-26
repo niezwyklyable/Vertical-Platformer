@@ -13,7 +13,7 @@ class Game():
     def update(self):
         # player
         if self.player:
-            self.player.change_state()
+            self.player.change_image()
 
     def render(self):
         # background

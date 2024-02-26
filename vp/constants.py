@@ -19,7 +19,7 @@ BACKGROUND = load('assets/backgrounds/bg.png') # 400x600px
 TERRAIN = load('assets/misc/Terrain/Terrain.png')
 FLOOR = TERRAIN.subsurface(7*16, 0, 16, 32)
 
-# player
+# player - idle state
 PLAYER_IDLE_RIGHT = load('assets/player/Idle (32x32).png')
 PLAYER_IDLE_LEFT = flip(PLAYER_IDLE_RIGHT, True, False) # mirroring player assets but changing their order
 PLAYER_IDLE_RIGHT_LIST = []
@@ -30,3 +30,15 @@ PLAYER_IDLE_LEFT_LIST = []
 for i in range(11):
     PLAYER_IDLE_LEFT_LIST.append(PLAYER_IDLE_LEFT.subsurface(i*32, 0, 32, 32))
 PLAYER_IDLE_LEFT_LIST.reverse() # reorder assets to original order
+
+# player - run state
+PLAYER_RUN_RIGHT = load('assets/player/Run (32x32).png')
+PLAYER_RUN_LEFT = flip(PLAYER_RUN_RIGHT, True, False) # mirroring player assets but changing their order
+PLAYER_RUN_RIGHT_LIST = []
+for i in range(12):
+    PLAYER_RUN_RIGHT_LIST.append(PLAYER_RUN_RIGHT.subsurface(i*32, 0, 32, 32))
+
+PLAYER_RUN_LEFT_LIST = []
+for i in range(12):
+    PLAYER_RUN_LEFT_LIST.append(PLAYER_RUN_LEFT.subsurface(i*32, 0, 32, 32))
+PLAYER_RUN_LEFT_LIST.reverse() # reorder assets to original order
