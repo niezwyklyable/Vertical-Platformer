@@ -30,6 +30,8 @@ def main():
                 game.player.move('left')
             elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                 game.player.move('right')
+            elif keys[pygame.K_SPACE] or keys[pygame.K_DOWN]:
+                game.player.move('jump')
             else:
                 game.player.change_state('idle')
 

@@ -13,6 +13,8 @@ class Game():
     def update(self):
         # player
         if self.player:
+            self.player.gravity()
+            self.check_boundaries()
             self.player.change_image()
 
     def render(self):
@@ -32,3 +34,13 @@ class Game():
 
     def create_player(self):
         self.player = Player(WIDTH//2, HEIGHT-FLOOR.get_height()-16)
+
+    def check_boundaries(self):
+        # check player collision with the floor after falling due to gravity
+        if self.player.y > HEIGHT-FLOOR.get_height()-16:
+            self.player.y = HEIGHT-FLOOR.get_height()-16
+            self.player.dY = 0
+            self.player.air = False
+            self.player.fall = False
+            self.player.idle = False
+            self.player.change_state('idle')

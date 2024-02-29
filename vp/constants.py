@@ -42,3 +42,14 @@ PLAYER_RUN_LEFT_LIST = []
 for i in range(12):
     PLAYER_RUN_LEFT_LIST.append(PLAYER_RUN_LEFT.subsurface(i*32, 0, 32, 32))
 PLAYER_RUN_LEFT_LIST.reverse() # reorder assets to original order
+
+# player - air state
+PLAYER_JUMP_RIGHT = load('assets/player/Jump (32x32).png')
+PLAYER_JUMP_LEFT = flip(PLAYER_JUMP_RIGHT, True, False)
+PLAYER_JUMP_RIGHT_LIST = [PLAYER_JUMP_RIGHT]
+PLAYER_JUMP_LEFT_LIST = [PLAYER_JUMP_LEFT]
+
+PLAYER_FALL_RIGHT = load('assets/player/Fall (32x32).png')
+PLAYER_FALL_LEFT = flip(PLAYER_FALL_RIGHT, True, False)
+PLAYER_FALL_RIGHT_LIST = [PLAYER_FALL_RIGHT]
+PLAYER_FALL_LEFT_LIST = [PLAYER_FALL_LEFT]
