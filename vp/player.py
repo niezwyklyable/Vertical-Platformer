@@ -1,7 +1,8 @@
 from .sprite import Sprite
 from .constants import PLAYER_IDLE_RIGHT_LIST, WIDTH, PLAYER_IDLE_LEFT_LIST, \
     PLAYER_RUN_LEFT_LIST, PLAYER_RUN_RIGHT_LIST, PLAYER_JUMP_LEFT_LIST, \
-    PLAYER_JUMP_RIGHT_LIST, PLAYER_FALL_LEFT_LIST, PLAYER_FALL_RIGHT_LIST
+    PLAYER_JUMP_RIGHT_LIST, PLAYER_FALL_LEFT_LIST, PLAYER_FALL_RIGHT_LIST, \
+    PLAYER_DOUBLE_JUMP_LEFT_LIST, PLAYER_DOUBLE_JUMP_RIGHT_LIST
 
 class Player(Sprite):
     def __init__(self, x, y):
@@ -13,9 +14,12 @@ class Player(Sprite):
         self.air = False
         self.fall = False
         self.G = 0.2 # gravitational accelaration
-        self.F = -10 # initial jump force
-        #self.states = ['idle', 'run', 'jump', 'fall', 'double_jump']
-        #self.dirs = ['right', 'left']
+        self.F1 = -10 # initial jump force
+        self.F2 = -5 # initial double jump force
+        self.double_jump_counter = 0 # it increments when player is in the air until it reaches DOUBLE_JUMP_LIMIT
+        self.DOUBLE_JUMP_LIMIT = 30 # after reaching that value player can perform double jump (double_jump_ready flag is on)
+        self.double_jump_ready = False # as above
+        self.double_jump_done = False # if True player cannot perform double jump (you can do it only once)
 
     # steering
     def move(self, dir):
@@ -30,7 +34,9 @@ class Player(Sprite):
             # check if there are correct assets for the air state
             elif self.air and self.last_dir == 'right':
                 self.img_counter = 0
-                if self.fall:
+                if self.double_jump_done: # during performing double jump
+                    self.IMG_TUPLE = tuple(PLAYER_DOUBLE_JUMP_LEFT_LIST)
+                elif self.fall:
                     self.IMG_TUPLE = tuple(PLAYER_FALL_LEFT_LIST)
                 else:
                     self.IMG_TUPLE = tuple(PLAYER_JUMP_LEFT_LIST)
@@ -52,7 +58,9 @@ class Player(Sprite):
             # check if there are correct assets for the air state
             elif self.air and self.last_dir == 'left':
                 self.img_counter = 0
-                if self.fall:
+                if self.double_jump_done: # during performing double jump
+                    self.IMG_TUPLE = tuple(PLAYER_DOUBLE_JUMP_RIGHT_LIST)
+                elif self.fall:
                     self.IMG_TUPLE = tuple(PLAYER_FALL_RIGHT_LIST)
                 else:
                     self.IMG_TUPLE = tuple(PLAYER_JUMP_RIGHT_LIST)
@@ -73,7 +81,19 @@ class Player(Sprite):
                 self.IMG = self.IMG_TUPLE[0]
                 self.idle = False
                 self.air = True
-                self.dY = self.F
+                self.dY = self.F1
+            elif self.double_jump_ready and self.air and not self.fall \
+                and not self.double_jump_done:
+                self.img_counter = 0
+                if self.last_dir == 'left':
+                    self.IMG_TUPLE = tuple(PLAYER_DOUBLE_JUMP_LEFT_LIST)
+                elif self.last_dir == 'right':
+                    self.IMG_TUPLE = tuple(PLAYER_DOUBLE_JUMP_RIGHT_LIST)
+                self.IMG = self.IMG_TUPLE[0]
+                self.idle = False
+                self.double_jump_ready = False
+                self.double_jump_done = True
+                self.dY = self.F2
 
     def change_state(self, state):
         if state == 'idle' and not self.idle and not self.air:
@@ -96,8 +116,19 @@ class Player(Sprite):
         if self.dY > 0 and not self.fall:
             self.air = True # it automatically turns on the air state when it detects falling
             self.fall = True
+            self.double_jump_ready = False
+            self.double_jump_done = False
+            self.double_jump_counter = 0
             self.change_state('fall')
 
         if self.air:
             self.dY += self.G
             self.y += self.dY
+
+    def double_jump_trigger_control(self):
+        if self.air and not self.fall and not self.double_jump_done:
+            self.double_jump_counter += 1
+            if self.double_jump_counter >= self.DOUBLE_JUMP_LIMIT:
+                self.double_jump_counter = 0
+                self.double_jump_ready = True
+                #print('DOUBLE_JUMP_LIMIT')

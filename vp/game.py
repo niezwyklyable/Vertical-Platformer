@@ -13,6 +13,7 @@ class Game():
     def update(self):
         # player
         if self.player:
+            self.player.double_jump_trigger_control()
             self.player.gravity()
             self.check_boundaries()
             self.player.change_image()
@@ -43,4 +44,7 @@ class Game():
             self.player.air = False
             self.player.fall = False
             self.player.idle = False
+            self.player.double_jump_ready = False
+            self.player.double_jump_done = False
+            self.player.double_jump_counter = 0
             self.player.change_state('idle')

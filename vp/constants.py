@@ -53,3 +53,14 @@ PLAYER_FALL_RIGHT = load('assets/player/Fall (32x32).png')
 PLAYER_FALL_LEFT = flip(PLAYER_FALL_RIGHT, True, False)
 PLAYER_FALL_RIGHT_LIST = [PLAYER_FALL_RIGHT]
 PLAYER_FALL_LEFT_LIST = [PLAYER_FALL_LEFT]
+
+PLAYER_DOUBLE_JUMP_RIGHT = load('assets/player/Double Jump (32x32).png')
+PLAYER_DOUBLE_JUMP_LEFT = flip(PLAYER_DOUBLE_JUMP_RIGHT, True, False)
+PLAYER_DOUBLE_JUMP_RIGHT_LIST = []
+for i in range(6):
+    PLAYER_DOUBLE_JUMP_RIGHT_LIST.append(PLAYER_DOUBLE_JUMP_RIGHT.subsurface(i*32, 0, 32, 32))
+
+PLAYER_DOUBLE_JUMP_LEFT_LIST = []
+for i in range(6):
+    PLAYER_DOUBLE_JUMP_LEFT_LIST.append(PLAYER_DOUBLE_JUMP_LEFT.subsurface(i*32, 0, 32, 32))
+PLAYER_DOUBLE_JUMP_LEFT_LIST.reverse() # reorder assets to original order
