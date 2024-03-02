@@ -1,5 +1,5 @@
 from pygame.image import load
-#from pygame.transform import scale
+from pygame.transform import scale
 from pygame.transform import flip
 
 # screen refreshing frequency
@@ -64,3 +64,7 @@ PLAYER_DOUBLE_JUMP_LEFT_LIST = []
 for i in range(6):
     PLAYER_DOUBLE_JUMP_LEFT_LIST.append(PLAYER_DOUBLE_JUMP_LEFT.subsurface(i*32, 0, 32, 32))
 PLAYER_DOUBLE_JUMP_LEFT_LIST.reverse() # reorder assets to original order
+
+# pads
+STEEL_PAD = scale(load('assets/pads/Pad_01_1.png'), (100, 20))
+STEEL_PAD_LIST = [STEEL_PAD]

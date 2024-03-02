@@ -132,3 +132,14 @@ class Player(Sprite):
                 self.double_jump_counter = 0
                 self.double_jump_ready = True
                 #print('DOUBLE_JUMP_LIMIT')
+
+    # reset settings after landing on the ground or the pad
+    def reset_settings(self):
+        self.dY = 0
+        self.air = False
+        self.fall = False
+        self.idle = False
+        self.double_jump_ready = False
+        self.double_jump_done = False
+        self.double_jump_counter = 0
+        self.change_state('idle')
