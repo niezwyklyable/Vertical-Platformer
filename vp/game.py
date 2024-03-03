@@ -2,7 +2,7 @@ import pygame
 from .constants import WHITE, BACKGROUND, WIDTH, HEIGHT, FLOOR
 from .player import Player
 from .pad import Pad
-#import random
+import random
 
 class Game():
     def __init__(self, win):
@@ -10,13 +10,15 @@ class Game():
         self.player = None
         self.pads = []
         self.create_player()
+        self.screen_counter = 0 # number of screens that player passed (it is necessary to determine altitude for the next generated pads)
+        self.PAD_SPACE = 100 # y distance between two nearest pads
         self.create_pads()
         self.gameover = False
-        self.exceed = False # if player exceeds the half of the screen then it goes True until screen completes moving
-        self.delta_y = 1 # y step of screen movement animation (possibly its value can be changed in the future so it is not a const)
+        self.delta_y = 2 # y step of screen movement animation (possibly its value can be changed in the future so it is not a const)
         self.floor_y = HEIGHT-32 # y of the floor
         self.bg1_y = 0 # y of the first background
         self.bg2_y = -BACKGROUND.get_height() # y of the next background
+        self.score = 0
 
     def update(self):
         # player
@@ -31,6 +33,10 @@ class Game():
                     if self.collision_detection(self.player, p):
                         self.player.reset_settings()
                         p.landed = True
+                        # score - max altitude measurement
+                        if p.altitude > self.score:
+                            self.score = p.altitude
+                            print(f'SCORE: {self.score}')
                         break
             if not self.player.air:
                 for p in self.pads:
@@ -48,10 +54,7 @@ class Game():
             self.player.change_image()
 
             # screen movement (actually it is not the screen to move but all the objects)
-            if self.player.y < HEIGHT//2: #and not self.exceed:
-                self.exceed = True
-            if self.exceed:
-                self.screen_movement_control()
+            self.screen_movement_control()
 
     def render(self):
         # background
@@ -60,8 +63,10 @@ class Game():
         self.win.blit(BACKGROUND, (0, self.bg2_y))
         if self.bg1_y >= HEIGHT:
             self.bg1_y = -BACKGROUND.get_height()
+            self.create_pads() # create_pads() method trigger
         if self.bg2_y >= HEIGHT:
             self.bg2_y = -BACKGROUND.get_height()
+            self.create_pads() # create_pads() method trigger
 
         # floor
         for i in range(WIDTH//16):
@@ -81,10 +86,25 @@ class Game():
         self.player = Player(WIDTH//2, HEIGHT-FLOOR.get_height()-16)
 
     def create_pads(self):
-        self.pads.append(Pad(150, 400))
-        self.pads.append(Pad(300, 150))
-        self.pads.append(Pad(150, -100))
-        self.pads.append(Pad(300, -350))
+        altitude = self.screen_counter * HEIGHT
+        # the first two screens of pads who appear immediately when the game starts
+        if altitude == 0:
+            for y in range(HEIGHT, -HEIGHT, -self.PAD_SPACE):
+                w = random.choice(range(80, 130, 10))
+                self.pads.append(Pad(random.choice(range(w//2, WIDTH-w//2, 10)), \
+                                    y - self.PAD_SPACE, \
+                                    w, \
+                                    altitude + HEIGHT - y + self.PAD_SPACE))
+            self.screen_counter = 2
+        # generate the next screen of pads
+        else:
+            for y in range(0, -HEIGHT, -self.PAD_SPACE):
+                w = random.choice(range(80, 130, 10))
+                self.pads.append(Pad(random.choice(range(w//2, WIDTH-w//2, 10)), \
+                                    y - self.PAD_SPACE, \
+                                    w, \
+                                    altitude - y + self.PAD_SPACE))
+            self.screen_counter += 1
 
     def check_boundaries(self):
         # check player collision with the floor after falling due to gravity
@@ -112,5 +132,3 @@ class Game():
             for p in self.pads:
                 p.y += self.delta_y
             self.player.y += self.delta_y
-        else:
-            self.exceed = False
