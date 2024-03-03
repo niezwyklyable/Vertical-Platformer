@@ -12,6 +12,11 @@ class Game():
         self.create_player()
         self.create_pads()
         self.gameover = False
+        self.exceed = False # if player exceeds the half of the screen then it goes True until screen completes moving
+        self.delta_y = 1 # y step of screen movement animation (possibly its value can be changed in the future so it is not a const)
+        self.floor_y = HEIGHT-32 # y of the floor
+        self.bg1_y = 0 # y of the first background
+        self.bg2_y = -BACKGROUND.get_height() # y of the next background
 
     def update(self):
         # player
@@ -41,15 +46,26 @@ class Game():
                         break
 
             self.player.change_image()
-    
+
+            # screen movement (actually it is not the screen to move but all the objects)
+            if self.player.y < HEIGHT//2: #and not self.exceed:
+                self.exceed = True
+            if self.exceed:
+                self.screen_movement_control()
+
     def render(self):
         # background
         self.win.fill(WHITE)
-        self.win.blit(BACKGROUND, (0, 0))
+        self.win.blit(BACKGROUND, (0, self.bg1_y))
+        self.win.blit(BACKGROUND, (0, self.bg2_y))
+        if self.bg1_y >= HEIGHT:
+            self.bg1_y = -BACKGROUND.get_height()
+        if self.bg2_y >= HEIGHT:
+            self.bg2_y = -BACKGROUND.get_height()
 
         # floor
         for i in range(WIDTH//16):
-            self.win.blit(FLOOR, (i*16, HEIGHT-32))
+            self.win.blit(FLOOR, (i*16, self.floor_y))
 
         # pads
         for p in self.pads:
@@ -67,12 +83,15 @@ class Game():
     def create_pads(self):
         self.pads.append(Pad(150, 400))
         self.pads.append(Pad(300, 150))
+        self.pads.append(Pad(150, -100))
+        self.pads.append(Pad(300, -350))
 
     def check_boundaries(self):
         # check player collision with the floor after falling due to gravity
-        if self.player.y > HEIGHT-FLOOR.get_height()-16:
-            self.player.y = HEIGHT-FLOOR.get_height()-16
-            self.player.reset_settings()
+        if self.floor_y < HEIGHT: # first check if floor is visible on the screen
+            if self.player.y > self.floor_y-16:
+                self.player.y = self.floor_y-16
+                self.player.reset_settings()
 
     def collision_detection(self, obj1, obj2):      
         if obj1.TYPE == 'PLAYER' and obj2.TYPE == 'PAD':
@@ -85,3 +104,13 @@ class Game():
             
         return False
     
+    def screen_movement_control(self):
+        if self.player.y < HEIGHT//2:
+            self.bg1_y += self.delta_y
+            self.bg2_y += self.delta_y
+            self.floor_y += self.delta_y
+            for p in self.pads:
+                p.y += self.delta_y
+            self.player.y += self.delta_y
+        else:
+            self.exceed = False
