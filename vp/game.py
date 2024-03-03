@@ -14,7 +14,8 @@ class Game():
         self.PAD_SPACE = 100 # y distance between two nearest pads
         self.create_pads()
         self.gameover = False
-        self.delta_y = 2 # y step of screen movement animation (possibly its value can be changed in the future so it is not a const)
+        self.delta_y = 2 # y step of screen movement animation when player progresses upwards (possibly its value can be changed in the future so it is not a const)
+        self.inactive_delta_y = 0.5 # y step of screen movement animation when player does not progress upwards - should be not lesser than above value (possibly its value can be changed in the future so it is not a const)
         self.floor_y = HEIGHT-32 # y of the floor
         self.bg1_y = 0 # y of the first background
         self.bg2_y = -BACKGROUND.get_height() # y of the next background
@@ -125,6 +126,7 @@ class Game():
         return False
     
     def screen_movement_control(self):
+        # when player progresses upwards
         if self.player.y < HEIGHT//2:
             self.bg1_y += self.delta_y
             self.bg2_y += self.delta_y
@@ -132,3 +134,11 @@ class Game():
             for p in self.pads:
                 p.y += self.delta_y
             self.player.y += self.delta_y
+        # when player does not progresses upwards (stays inactive)
+        elif self.floor_y >= HEIGHT:
+            self.bg1_y += self.inactive_delta_y
+            self.bg2_y += self.inactive_delta_y
+            self.floor_y += self.inactive_delta_y
+            for p in self.pads:
+                p.y += self.inactive_delta_y
+            self.player.y += self.inactive_delta_y
