@@ -68,3 +68,15 @@ PLAYER_DOUBLE_JUMP_LEFT_LIST.reverse() # reorder assets to original order
 # pads
 STEEL_PAD = scale(load('assets/pads/Pad_01_1.png'), (100, 20))
 STEEL_PAD_LIST = [STEEL_PAD]
+WOODEN_PAD = scale(load('assets/pads/Pad_02_1.png'), (100, 20))
+WOODEN_PAD_LIST = [WOODEN_PAD]
+MEADOW_PAD = scale(load('assets/pads/Pad_04_1.png'), (100, 20))
+MEADOW_PAD_LIST = [MEADOW_PAD]
+VOLCANIC_PAD = scale(load('assets/pads/Pad_03_1.png'), (100, 20))
+VOLCANIC_PAD_LIST = [VOLCANIC_PAD]
+
+# game settings
+LEVEL_2_CHECKPOINT = 2000
+LEVEL_3_CHECKPOINT = 4000
+LEVEL_4_CHECKPOINT = 6000
+GAME_OVER_CHECKPOINT = 8000

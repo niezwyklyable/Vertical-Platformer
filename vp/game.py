@@ -1,5 +1,5 @@
 import pygame
-from .constants import WHITE, BACKGROUND, WIDTH, HEIGHT, FLOOR
+from .constants import WHITE, BACKGROUND, WIDTH, HEIGHT, FLOOR, GAME_OVER_CHECKPOINT
 from .player import Player
 from .pad import Pad
 import random
@@ -37,6 +37,9 @@ class Game():
                         # score - max altitude measurement
                         if p.altitude > self.score:
                             self.score = p.altitude
+                            if self.score == GAME_OVER_CHECKPOINT:
+                                self.gameover = True
+                                print('GAME OVER')
                             print(f'SCORE: {self.score}')
                         break
             if not self.player.air:
@@ -100,6 +103,8 @@ class Game():
         # generate the next screen of pads
         else:
             for y in range(0, -HEIGHT, -self.PAD_SPACE):
+                if altitude - y + self.PAD_SPACE > GAME_OVER_CHECKPOINT:
+                    break
                 w = random.choice(range(80, 130, 10))
                 self.pads.append(Pad(random.choice(range(w//2, WIDTH-w//2, 10)), \
                                     y - self.PAD_SPACE, \
@@ -135,7 +140,7 @@ class Game():
                 p.y += self.delta_y
             self.player.y += self.delta_y
         # when player does not progresses upwards (stays inactive)
-        elif self.floor_y >= HEIGHT:
+        elif self.floor_y >= HEIGHT and not self.gameover:
             self.bg1_y += self.inactive_delta_y
             self.bg2_y += self.inactive_delta_y
             self.floor_y += self.inactive_delta_y
