@@ -24,9 +24,10 @@ class Game():
     def update(self):
         # player
         if self.player:
-            self.player.double_jump_trigger_control()
-            self.player.gravity()
-            self.check_boundaries()
+            if not self.gameover:
+                self.player.double_jump_trigger_control()
+                self.player.gravity()
+                self.check_boundaries()
             
             # collisions with pads
             if self.player.fall:
@@ -39,7 +40,7 @@ class Game():
                             self.score = p.altitude
                             if self.score == GAME_OVER_CHECKPOINT:
                                 self.gameover = True
-                                print('GAME OVER')
+                                print('YOU WON !!! GAME OVER !!!')
                             print(f'SCORE: {self.score}')
                         break
             if not self.player.air:
@@ -118,6 +119,11 @@ class Game():
             if self.player.y > self.floor_y-16:
                 self.player.y = self.floor_y-16
                 self.player.reset_settings()
+        else: # if not, it means that player could fell from the pad and be out of the screen
+            if self.player.y > HEIGHT + self.player.IMG.get_height()//2:
+                self.gameover = True
+                print(f'YOU LOST !!! GAMEOVER !!!')
+                print(f'SCORE: {self.score}')
 
     def collision_detection(self, obj1, obj2):      
         if obj1.TYPE == 'PLAYER' and obj2.TYPE == 'PAD':
