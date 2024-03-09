@@ -1,5 +1,6 @@
 import pygame
-from .constants import WHITE, BACKGROUND, WIDTH, HEIGHT, FLOOR, GAME_OVER_CHECKPOINT
+from .constants import WHITE, BACKGROUND, WIDTH, HEIGHT, FLOOR, GAME_OVER_CHECKPOINT, \
+TRAP_PERCENTAGE, LEVEL_2_CHECKPOINT, LEVEL_3_CHECKPOINT, LEVEL_4_CHECKPOINT
 from .player import Player
 from .pad import Pad
 import random
@@ -96,10 +97,28 @@ class Game():
         if altitude == 0:
             for y in range(HEIGHT, -HEIGHT, -self.PAD_SPACE):
                 w = random.choice(range(80, 130, 10))
+                # check if it can generate a trap instead of a regular pad
+                trap_chance = random.choice(range(100))
+                if trap_chance <= TRAP_PERCENTAGE and \
+                    altitude + HEIGHT - y + self.PAD_SPACE != LEVEL_2_CHECKPOINT and \
+                    altitude + HEIGHT - y + self.PAD_SPACE != LEVEL_3_CHECKPOINT and \
+                    altitude + HEIGHT - y + self.PAD_SPACE != LEVEL_4_CHECKPOINT and \
+                    altitude + HEIGHT - y + self.PAD_SPACE != GAME_OVER_CHECKPOINT:
+                    # protection from generating two traps in a row and a first pad as a trap
+                    if self.pads:
+                        if not self.pads[-1].trap:
+                            trap = True
+                        else:
+                            trap = False
+                    else:
+                        trap = False
+                else:
+                    trap = False
                 self.pads.append(Pad(random.choice(range(w//2, WIDTH-w//2, 10)), \
                                     y - self.PAD_SPACE, \
                                     w, \
-                                    altitude + HEIGHT - y + self.PAD_SPACE))
+                                    altitude + HEIGHT - y + self.PAD_SPACE, \
+                                    trap))
             self.screen_counter = 2
         # generate the next screen of pads
         else:
@@ -107,10 +126,28 @@ class Game():
                 if altitude - y + self.PAD_SPACE > GAME_OVER_CHECKPOINT:
                     break
                 w = random.choice(range(80, 130, 10))
+                # check if it can generate a trap instead of a regular pad
+                trap_chance = random.choice(range(100))
+                if trap_chance <= TRAP_PERCENTAGE and \
+                    altitude - y + self.PAD_SPACE != LEVEL_2_CHECKPOINT and \
+                    altitude - y + self.PAD_SPACE != LEVEL_3_CHECKPOINT and \
+                    altitude - y + self.PAD_SPACE != LEVEL_4_CHECKPOINT and \
+                    altitude - y + self.PAD_SPACE != GAME_OVER_CHECKPOINT:
+                    # protection from generating two traps in a row and a first pad as a trap
+                    if self.pads:
+                        if not self.pads[-1].trap:
+                            trap = True
+                        else:
+                            trap = False
+                    else:
+                        trap = False
+                else:
+                    trap = False
                 self.pads.append(Pad(random.choice(range(w//2, WIDTH-w//2, 10)), \
                                     y - self.PAD_SPACE, \
                                     w, \
-                                    altitude - y + self.PAD_SPACE))
+                                    altitude - y + self.PAD_SPACE, \
+                                    trap))
             self.screen_counter += 1
 
     def check_boundaries(self):

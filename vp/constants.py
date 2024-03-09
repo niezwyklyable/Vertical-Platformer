@@ -80,3 +80,14 @@ LEVEL_2_CHECKPOINT = 2000
 LEVEL_3_CHECKPOINT = 4000
 LEVEL_4_CHECKPOINT = 6000
 GAME_OVER_CHECKPOINT = 8000
+TRAP_PERCENTAGE = 30 # probability of generating the trap instead of a pad
+
+# traps
+STEEL_TRAP = scale(load('assets/pads/Pad_01_2.png'), (100, 30))
+STEEL_TRAP_LIST = [STEEL_TRAP]
+WOODEN_TRAP = scale(load('assets/pads/Pad_02_2.png'), (100, 40))
+WOODEN_TRAP_LIST = [WOODEN_TRAP]
+MEADOW_TRAP = scale(load('assets/pads/Pad_04_2.png'), (100, 30))
+MEADOW_TRAP_LIST = [MEADOW_TRAP]
+VOLCANIC_TRAP = scale(load('assets/pads/Pad_03_2.png'), (100, 30))
+VOLCANIC_TRAP_LIST = [VOLCANIC_TRAP]
