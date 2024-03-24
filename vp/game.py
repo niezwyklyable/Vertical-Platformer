@@ -33,6 +33,10 @@ class Game():
                 self.player.gravity()
                 self.check_boundaries()
             
+            # enemies' movement
+            for e in self.enemies:
+                e.move()
+
             # collisions with pads
             if self.player.fall:
                 for p in self.pads:
