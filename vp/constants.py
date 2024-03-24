@@ -81,6 +81,7 @@ LEVEL_3_CHECKPOINT = 4000
 LEVEL_4_CHECKPOINT = 6000
 GAME_OVER_CHECKPOINT = 8000
 TRAP_PERCENTAGE = 30 # probability of generating the trap instead of a pad
+ENEMY_PERCENTAGE = 30 # probability of generating an enemy just above the pad
 
 # traps
 STEEL_TRAP = scale(load('assets/pads/Pad_01_2.png'), (100, 30))
@@ -91,3 +92,52 @@ MEADOW_TRAP = scale(load('assets/pads/Pad_04_2.png'), (100, 30))
 MEADOW_TRAP_LIST = [MEADOW_TRAP]
 VOLCANIC_TRAP = scale(load('assets/pads/Pad_03_2.png'), (100, 30))
 VOLCANIC_TRAP_LIST = [VOLCANIC_TRAP]
+
+# enemies
+# bat
+BAT_LEFT = load('assets/enemies/Bat/Flying (46x30).png')
+BAT_RIGHT = flip(BAT_LEFT, True, False)
+BAT_LEFT_LIST = []
+for i in range(7):
+    BAT_LEFT_LIST.append(BAT_LEFT.subsurface(i*46, 0, 46, 30))
+
+BAT_RIGHT_LIST = []
+for i in range(7):
+    BAT_RIGHT_LIST.append(BAT_RIGHT.subsurface(i*46, 0, 46, 30))
+BAT_RIGHT_LIST.reverse() # reorder assets to original order
+
+# bird
+BIRD_LEFT = load('assets/enemies/BlueBird/Flying (32x32).png')
+BIRD_RIGHT = flip(BIRD_LEFT, True, False)
+BIRD_LEFT_LIST = []
+for i in range(9):
+    BIRD_LEFT_LIST.append(BIRD_LEFT.subsurface(i*32, 0, 32, 32))
+
+BIRD_RIGHT_LIST = []
+for i in range(9):
+    BIRD_RIGHT_LIST.append(BIRD_RIGHT.subsurface(i*32, 0, 32, 32))
+BIRD_RIGHT_LIST.reverse() # reorder assets to original order
+
+# ghost
+GHOST_LEFT = load('assets/enemies/Ghost/Idle (44x30).png')
+GHOST_RIGHT = flip(GHOST_LEFT, True, False)
+GHOST_LEFT_LIST = []
+for i in range(10):
+    GHOST_LEFT_LIST.append(GHOST_LEFT.subsurface(i*44, 0, 44, 30))
+
+GHOST_RIGHT_LIST = []
+for i in range(10):
+    GHOST_RIGHT_LIST.append(GHOST_RIGHT.subsurface(i*44, 0, 44, 30))
+GHOST_RIGHT_LIST.reverse() # reorder assets to original order
+
+# skull
+SKULL_RIGHT = load('assets/enemies/Skull/Idle 1 (52x54).png')
+SKULL_LEFT = flip(SKULL_RIGHT, True, False)
+SKULL_RIGHT_LIST = []
+for i in range(8):
+    SKULL_RIGHT_LIST.append(scale(SKULL_RIGHT.subsurface(i*52, 0, 52, 54), (32, 34)))
+
+SKULL_LEFT_LIST = []
+for i in range(8):
+    SKULL_LEFT_LIST.append(scale(SKULL_LEFT.subsurface(i*52, 0, 52, 54), (32, 34)))
+SKULL_LEFT_LIST.reverse() # reorder assets to original order

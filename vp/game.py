@@ -1,15 +1,18 @@
 import pygame
 from .constants import WHITE, BACKGROUND, WIDTH, HEIGHT, FLOOR, GAME_OVER_CHECKPOINT, \
-TRAP_PERCENTAGE, LEVEL_2_CHECKPOINT, LEVEL_3_CHECKPOINT, LEVEL_4_CHECKPOINT
+TRAP_PERCENTAGE, LEVEL_2_CHECKPOINT, LEVEL_3_CHECKPOINT, LEVEL_4_CHECKPOINT, \
+ENEMY_PERCENTAGE
 from .player import Player
 from .pad import Pad
 import random
+from .enemies import Enemy
 
 class Game():
     def __init__(self, win):
         self.win = win
         self.player = None
         self.pads = []
+        self.enemies = []
         self.create_player()
         self.screen_counter = 0 # number of screens that player passed (it is necessary to determine altitude for the next generated pads)
         self.PAD_SPACE = 100 # y distance between two nearest pads
@@ -57,7 +60,10 @@ class Game():
                         p.landed = False # clear the flag if player jumps from this specific pad
                         break
 
+            # animations
             self.player.change_image()
+            for e in self.enemies:
+                e.change_image()
 
             # screen movement (actually it is not the screen to move but all the objects)
             self.screen_movement_control()
@@ -81,6 +87,10 @@ class Game():
         # pads
         for p in self.pads:
             p.draw(self.win)
+
+        # enemies
+        for e in self.enemies:
+            e.draw(self.win)
 
         # player
         if self.player:
@@ -119,6 +129,7 @@ class Game():
                                     w, \
                                     altitude + HEIGHT - y + self.PAD_SPACE, \
                                     trap))
+            self.create_enemies()
             self.screen_counter = 2
         # generate the next screen of pads
         else:
@@ -148,7 +159,49 @@ class Game():
                                     w, \
                                     altitude - y + self.PAD_SPACE, \
                                     trap))
+            self.create_enemies()
             self.screen_counter += 1
+
+    def create_enemies(self):
+        altitude = self.screen_counter * HEIGHT
+        # the first two screens of enemies who appear immediately when the game starts
+        if altitude == 0:
+            for y in range(HEIGHT, -HEIGHT, -self.PAD_SPACE):
+                # check the chance to generate an enemy
+                enemy_chance = random.choice(range(100))
+                if enemy_chance <= ENEMY_PERCENTAGE and \
+                    altitude + HEIGHT - y + self.PAD_SPACE != LEVEL_2_CHECKPOINT and \
+                    altitude + HEIGHT - y + self.PAD_SPACE != LEVEL_3_CHECKPOINT and \
+                    altitude + HEIGHT - y + self.PAD_SPACE != LEVEL_4_CHECKPOINT and \
+                    altitude + HEIGHT - y + self.PAD_SPACE != GAME_OVER_CHECKPOINT:
+                    enemy = True
+                else:
+                    enemy = False
+                if enemy:
+                    self.enemies.append(Enemy(random.choice(range(56//2, WIDTH-56//2, 10)), \
+                                        y - self.PAD_SPACE - 64//2, \
+                                        random.choice(('right', 'left')), \
+                                        altitude + HEIGHT - y + self.PAD_SPACE))
+        # generate the next screen of enemies
+        else:
+            for y in range(0, -HEIGHT, -self.PAD_SPACE):
+                if altitude - y + self.PAD_SPACE > GAME_OVER_CHECKPOINT:
+                    break
+                # check the chance to generate an enemy
+                enemy_chance = random.choice(range(100))
+                if enemy_chance <= ENEMY_PERCENTAGE and \
+                    altitude - y + self.PAD_SPACE != LEVEL_2_CHECKPOINT and \
+                    altitude - y + self.PAD_SPACE != LEVEL_3_CHECKPOINT and \
+                    altitude - y + self.PAD_SPACE != LEVEL_4_CHECKPOINT and \
+                    altitude - y + self.PAD_SPACE != GAME_OVER_CHECKPOINT:
+                    enemy = True
+                else:
+                    enemy = False
+                if enemy:
+                    self.enemies.append(Enemy(random.choice(range(56//2, WIDTH-56//2, 10)), \
+                                        y - self.PAD_SPACE - 64//2, \
+                                        random.choice(('right', 'left')), \
+                                        altitude - y + self.PAD_SPACE))
 
     def check_boundaries(self):
         # check player collision with the floor after falling due to gravity
@@ -182,6 +235,8 @@ class Game():
             for p in self.pads:
                 p.y += self.delta_y
             self.player.y += self.delta_y
+            for e in self.enemies:
+                e.y += self.delta_y
         # when player does not progresses upwards (stays inactive)
         elif self.floor_y >= HEIGHT and not self.gameover:
             self.bg1_y += self.inactive_delta_y
@@ -190,3 +245,5 @@ class Game():
             for p in self.pads:
                 p.y += self.inactive_delta_y
             self.player.y += self.inactive_delta_y
+            for e in self.enemies:
+                e.y += self.inactive_delta_y
