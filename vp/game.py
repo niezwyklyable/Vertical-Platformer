@@ -178,7 +178,17 @@ class Game():
                     altitude + HEIGHT - y + self.PAD_SPACE != LEVEL_3_CHECKPOINT and \
                     altitude + HEIGHT - y + self.PAD_SPACE != LEVEL_4_CHECKPOINT and \
                     altitude + HEIGHT - y + self.PAD_SPACE != GAME_OVER_CHECKPOINT:
-                    enemy = True
+                    # protection from generating two enemies in a row and above the first pad
+                    if y < HEIGHT:
+                        if self.enemies:
+                            if altitude + HEIGHT - y + self.PAD_SPACE - self.enemies[-1].altitude > self.PAD_SPACE:
+                                enemy = True
+                            else:
+                                enemy = False
+                        else:
+                            enemy = True
+                    else:
+                        enemy = False
                 else:
                     enemy = False
                 if enemy:
@@ -198,7 +208,17 @@ class Game():
                     altitude - y + self.PAD_SPACE != LEVEL_3_CHECKPOINT and \
                     altitude - y + self.PAD_SPACE != LEVEL_4_CHECKPOINT and \
                     altitude - y + self.PAD_SPACE != GAME_OVER_CHECKPOINT:
-                    enemy = True
+                    # protection from generating two enemies in a row and above the first pad
+                    if y < 0:
+                        if self.enemies:
+                            if altitude - y + self.PAD_SPACE - self.enemies[-1].altitude > self.PAD_SPACE:
+                                enemy = True
+                            else:
+                                enemy = False
+                        else:
+                            enemy = True
+                    else:
+                        enemy = False
                 else:
                     enemy = False
                 if enemy:
