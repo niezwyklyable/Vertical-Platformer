@@ -2,7 +2,8 @@ from .sprite import Sprite
 from .constants import PLAYER_IDLE_RIGHT_LIST, WIDTH, PLAYER_IDLE_LEFT_LIST, \
     PLAYER_RUN_LEFT_LIST, PLAYER_RUN_RIGHT_LIST, PLAYER_JUMP_LEFT_LIST, \
     PLAYER_JUMP_RIGHT_LIST, PLAYER_FALL_LEFT_LIST, PLAYER_FALL_RIGHT_LIST, \
-    PLAYER_DOUBLE_JUMP_LEFT_LIST, PLAYER_DOUBLE_JUMP_RIGHT_LIST
+    PLAYER_DOUBLE_JUMP_LEFT_LIST, PLAYER_DOUBLE_JUMP_RIGHT_LIST, \
+    PLAYER_HIT_LEFT_LIST, PLAYER_HIT_RIGHT_LIST, DECAY_LOOP_FACTOR
 
 class Player(Sprite):
     def __init__(self, x, y):
@@ -20,6 +21,9 @@ class Player(Sprite):
         self.DOUBLE_JUMP_LIMIT = 30 # after reaching that value player can perform double jump (double_jump_ready flag is on)
         self.double_jump_ready = False # as above
         self.double_jump_done = False # if True player cannot perform double jump (you can do it only once)
+        self.decaying = False
+        self.DECAY_LEFT_LIST = DECAY_LOOP_FACTOR * PLAYER_HIT_LEFT_LIST
+        self.DECAY_RIGHT_LIST = DECAY_LOOP_FACTOR * PLAYER_HIT_RIGHT_LIST
 
     # steering
     def move(self, dir):
@@ -143,3 +147,17 @@ class Player(Sprite):
         self.double_jump_done = False
         self.double_jump_counter = 0
         self.change_state('idle')
+
+    def decay(self):
+        if self.last_dir == 'left':
+            if self.DECAY_LEFT_LIST:
+                self.IMG = self.DECAY_LEFT_LIST.pop(0)
+                return True
+            else:
+                return False
+        elif self.last_dir == 'right':
+            if self.DECAY_RIGHT_LIST:
+                self.IMG = self.DECAY_RIGHT_LIST.pop(0)
+                return True
+            else:
+                return False

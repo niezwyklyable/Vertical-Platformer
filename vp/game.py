@@ -1,7 +1,7 @@
 import pygame
 from .constants import WHITE, BACKGROUND, WIDTH, HEIGHT, FLOOR, GAME_OVER_CHECKPOINT, \
 TRAP_PERCENTAGE, LEVEL_2_CHECKPOINT, LEVEL_3_CHECKPOINT, LEVEL_4_CHECKPOINT, \
-ENEMY_PERCENTAGE
+ENEMY_PERCENTAGE, DIM_FACTOR
 from .player import Player
 from .pad import Pad
 import random
@@ -33,9 +33,11 @@ class Game():
                 self.player.gravity()
                 self.check_boundaries()
             
-            # enemies' movement
-            for e in self.enemies:
-                e.move()
+                # collisions with enemies
+                for e in self.enemies:
+                    if self.collision_detection(self.player, e):
+                        self.gameover = True
+                        self.player.decaying = True
 
             # collisions with pads
             if self.player.fall:
@@ -65,12 +67,26 @@ class Game():
                         break
 
             # animations
-            self.player.change_image()
-            for e in self.enemies:
-                e.change_image()
+            if self.player.decaying:
+                if self.player.decay():
+                    pass # do nothing - let objects animate until it finishes
+                else:
+                    print(f'YOU LOST !!! GAMEOVER !!!')
+                    print(f'SCORE: {self.score}')
+                    self.player.decaying = False
+            elif not self.gameover:
+                self.player.change_image()
+            else:
+                self.player = None
+                return
 
             # screen movement (actually it is not the screen to move but all the objects)
             self.screen_movement_control()
+
+        # enemies
+        for e in self.enemies:
+            e.move()
+            e.change_image()
 
     def render(self):
         # background
@@ -248,6 +264,12 @@ class Game():
                 obj1.y = obj2.y - obj2.IMG.get_height()//2 - obj1.IMG.get_height()//2
                 return True
             
+        if obj1.TYPE == 'PLAYER' and obj2.TYPE == 'ENEMY':
+            # check distances between positions of two objects in a range of both objects
+            if abs(obj1.x - obj2.x) <= (obj1.IMG.get_width()//2 + obj2.IMG.get_width()//2)*DIM_FACTOR and \
+                abs(obj1.y - obj2.y) <= (obj1.IMG.get_height()//2 + obj2.IMG.get_height()//2)*DIM_FACTOR:
+                return True
+
         return False
     
     def screen_movement_control(self):
