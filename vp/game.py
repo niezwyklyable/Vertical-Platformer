@@ -48,6 +48,7 @@ class Game():
                         # score - max altitude measurement
                         if p.altitude > self.score:
                             self.score = p.altitude
+                            self.increase_delta() # check if it is the next level
                             if self.score == GAME_OVER_CHECKPOINT:
                                 self.gameover = True
                                 print('YOU WON !!! GAME OVER !!!')
@@ -74,11 +75,11 @@ class Game():
                     print(f'YOU LOST !!! GAMEOVER !!!')
                     print(f'SCORE: {self.score}')
                     self.player.decaying = False
-            elif not self.gameover:
-                self.player.change_image()
-            else:
+            elif self.gameover and self.score < GAME_OVER_CHECKPOINT:
                 self.player = None
                 return
+            else: # if it is game over because of winning the game or during the game
+                self.player.change_image()
 
             # screen movement (actually it is not the screen to move but all the objects)
             self.screen_movement_control()
@@ -272,6 +273,18 @@ class Game():
 
         return False
     
+    def increase_delta(self):
+        # delta_y and inactive delta_y increase
+        if self.score >= LEVEL_2_CHECKPOINT and self.score < LEVEL_3_CHECKPOINT:
+            self.delta_y = 3.0
+            self.inactive_delta_y = 1.0
+        elif self.score >= LEVEL_3_CHECKPOINT and self.score < LEVEL_4_CHECKPOINT:
+            self.delta_y = 3.5
+            self.inactive_delta_y = 1.3
+        elif self.score >= LEVEL_4_CHECKPOINT:
+            self.delta_y = 4.0
+            self.inactive_delta_y = 1.5
+
     def screen_movement_control(self):
         # when player progresses upwards
         if self.player.y < HEIGHT//2:
