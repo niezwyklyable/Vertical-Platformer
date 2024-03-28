@@ -1,11 +1,12 @@
 import pygame
 from .constants import WHITE, BACKGROUND, WIDTH, HEIGHT, FLOOR, GAME_OVER_CHECKPOINT, \
 TRAP_PERCENTAGE, LEVEL_2_CHECKPOINT, LEVEL_3_CHECKPOINT, LEVEL_4_CHECKPOINT, \
-ENEMY_PERCENTAGE, DIM_FACTOR
+ENEMY_PERCENTAGE, DIM_FACTOR, TRAMPOLINE_PERCENTAGE, TRAMPOLINE_IDLE, STEEL_PAD
 from .player import Player
 from .pad import Pad
 import random
 from .enemies import Enemy
+from .trampoline import Trampoline
 
 class Game():
     def __init__(self, win):
@@ -13,6 +14,7 @@ class Game():
         self.player = None
         self.pads = []
         self.enemies = []
+        self.trampolines = []
         self.create_player()
         self.screen_counter = 0 # number of screens that player passed (it is necessary to determine altitude for the next generated pads)
         self.PAD_SPACE = 100 # y distance between two nearest pads
@@ -89,6 +91,10 @@ class Game():
             e.move()
             e.change_image()
 
+        # trampolines
+        for t in self.trampolines:
+            t.change_image()
+
     def render(self):
         # background
         self.win.fill(WHITE)
@@ -104,6 +110,10 @@ class Game():
         # floor
         for i in range(WIDTH//16):
             self.win.blit(FLOOR, (i*16, self.floor_y))
+
+        # trampolines
+        for t in self.trampolines:
+            t.draw(self.win)
 
         # pads
         for p in self.pads:
@@ -128,6 +138,7 @@ class Game():
         if altitude == 0:
             for y in range(HEIGHT, -HEIGHT, -self.PAD_SPACE):
                 w = random.choice(range(80, 130, 10))
+                x = random.choice(range(w//2, WIDTH-w//2, 10))
                 # check if it can generate a trap instead of a regular pad
                 trap_chance = random.choice(range(100))
                 if trap_chance <= TRAP_PERCENTAGE and \
@@ -139,13 +150,18 @@ class Game():
                     if self.pads:
                         if not self.pads[-1].trap:
                             trap = True
+                            # check if it can generate a trampoline
+                            trampoline_chance = random.choice(range(100))
+                            if trampoline_chance <= TRAMPOLINE_PERCENTAGE:
+                                self.create_trampoline(x, y-self.PAD_SPACE, w, \
+                                                       altitude + HEIGHT - y + self.PAD_SPACE)
                         else:
                             trap = False
                     else:
                         trap = False
                 else:
                     trap = False
-                self.pads.append(Pad(random.choice(range(w//2, WIDTH-w//2, 10)), \
+                self.pads.append(Pad(x, \
                                     y - self.PAD_SPACE, \
                                     w, \
                                     altitude + HEIGHT - y + self.PAD_SPACE, \
@@ -158,6 +174,7 @@ class Game():
                 if altitude - y + self.PAD_SPACE > GAME_OVER_CHECKPOINT:
                     break
                 w = random.choice(range(80, 130, 10))
+                x = random.choice(range(w//2, WIDTH-w//2, 10))
                 # check if it can generate a trap instead of a regular pad
                 trap_chance = random.choice(range(100))
                 if trap_chance <= TRAP_PERCENTAGE and \
@@ -169,13 +186,18 @@ class Game():
                     if self.pads:
                         if not self.pads[-1].trap:
                             trap = True
+                            # check if it can generate a trampoline
+                            trampoline_chance = random.choice(range(100))
+                            if trampoline_chance <= TRAMPOLINE_PERCENTAGE:
+                                self.create_trampoline(x, y-self.PAD_SPACE, w, \
+                                                       altitude - y + self.PAD_SPACE)
                         else:
                             trap = False
                     else:
                         trap = False
                 else:
                     trap = False
-                self.pads.append(Pad(random.choice(range(w//2, WIDTH-w//2, 10)), \
+                self.pads.append(Pad(x, \
                                     y - self.PAD_SPACE, \
                                     w, \
                                     altitude - y + self.PAD_SPACE, \
@@ -244,6 +266,21 @@ class Game():
                                         random.choice(('right', 'left')), \
                                         altitude - y + self.PAD_SPACE))
 
+    def create_trampoline(self, x, y, w, altitude):
+        x_trampoline = random.choice(range(x-w//2+TRAMPOLINE_IDLE.get_width()//2, \
+                                            x+w//2-TRAMPOLINE_IDLE.get_width()//2, \
+                                            10))
+        if altitude > LEVEL_2_CHECKPOINT and altitude < LEVEL_3_CHECKPOINT:
+            bias = -2 # wooden
+        if altitude > LEVEL_3_CHECKPOINT and altitude < LEVEL_4_CHECKPOINT:
+            bias = 6 # meadow
+        elif altitude > LEVEL_4_CHECKPOINT:
+            bias = 5 # volcanic
+        else:
+            bias = 1 # steel
+        y_trampoline = y - STEEL_PAD.get_height()//2 - TRAMPOLINE_IDLE.get_height()//2 + bias
+        self.trampolines.append(Trampoline(x_trampoline, y_trampoline))
+
     def check_boundaries(self):
         # check player collision with the floor after falling due to gravity
         if self.floor_y < HEIGHT: # first check if floor is visible on the screen
@@ -296,6 +333,8 @@ class Game():
             self.player.y += self.delta_y
             for e in self.enemies:
                 e.y += self.delta_y
+            for t in self.trampolines:
+                t.y += self.delta_y
         # when player does not progresses upwards (stays inactive)
         elif self.floor_y >= HEIGHT and not self.gameover:
             self.bg1_y += self.inactive_delta_y
@@ -306,3 +345,5 @@ class Game():
             self.player.y += self.inactive_delta_y
             for e in self.enemies:
                 e.y += self.inactive_delta_y
+            for t in self.trampolines:
+                t.y += self.inactive_delta_y

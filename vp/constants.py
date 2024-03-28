@@ -23,6 +23,7 @@ DIM_FACTOR = 0.8 # it decreases the base distance for collision detection method
 REPLICATE_FACTOR = 2 # it extends the lifetime of a single animation (positive int only)
 DECAY_REPLICATE_FACTOR = 2 # like above but it concerns only player's decaying process (positive int only)
 DECAY_LOOP_FACTOR = 6 # determines how many loops continue during decaying process (positive int only)
+TRAMPOLINE_PERCENTAGE = 100 # probability of generating a trampoline just above a trap
 
 # background
 BACKGROUND = load('assets/backgrounds/bg.png') # 400x600px
@@ -163,3 +164,11 @@ for i in range(8):
     for _ in range(REPLICATE_FACTOR):
         SKULL_LEFT_LIST.append(scale(SKULL_LEFT.subsurface(i*52, 0, 52, 54), (32, 34)))
 SKULL_LEFT_LIST.reverse() # reorder assets to original order
+
+# trampoline
+TRAMPOLINE_IDLE = load('assets/misc/Trampoline/Idle.png') # 28x28
+TRAMPOLINE_IDLE_LIST = [TRAMPOLINE_IDLE]
+TRAMPOLINE_JUMP = load('assets/misc/Trampoline/Jump (28x28).png')
+TRAMPOLINE_JUMP_LIST = []
+for i in range(8):
+    TRAMPOLINE_JUMP_LIST.append(TRAMPOLINE_JUMP.subsurface(i*28, 0, 28, 28))
